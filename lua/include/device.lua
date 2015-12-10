@@ -36,6 +36,7 @@ mod.PCI_ID_82580	= 0x8086150E
 mod.PCI_ID_I350		= 0x80861521
 mod.PCI_ID_82576	= 0x80861526
 mod.PCI_ID_XL710	= 0x80861583
+mod.PCI_ID_X710		= 0x80861572
 
 mod.PCI_ID_82599_VF	= 0x808610ed
 
@@ -394,6 +395,7 @@ local deviceNames = {
 	[mod.PCI_ID_X520]	= "Ethernet 10G 2P X520 Adapter", -- Dell-branded NIC with an 82599
 	[mod.PCI_ID_X540]	= "Ethernet Controller 10-Gigabit X540-AT2",
 	[mod.PCI_ID_XL710]	= "Ethernet Controller LX710 for 40GbE QSFP+",
+	[mod.PCI_ID_X710]	= "Ethernet Controller X710 for 10GbE SFP+",
 	[mod.PCI_ID_82599_VF]	= "Intel Corporation 82599 Ethernet Controller Virtual Function",
 }
 
@@ -466,7 +468,7 @@ local lastBprc = 0
 --- get the number of packets received since the last call to this function
 function dev:getRxStats()
 	local devId = self:getPciId()
-	if devId == mod.PCI_ID_XL710 then
+	if devId == mod.PCI_ID_XL710 or devId == mod.PCI_ID_X710 then
 		local uprc, mprc, bprc, gorc
 		uprc, lastUprc = readCtr32(self.id, 0x003005A0, lastUprc)
 		mprc, lastMprc = readCtr32(self.id, 0x003005C0, lastMprc)
@@ -490,7 +492,7 @@ function dev:getTxStats()
 	local badBytes = tonumber(dpdkc.get_bad_bytes_sent(self.id))
 	-- FIXME: this should really be split up into separate functions/files
 	local devId = self:getPciId()
-	if devId == mod.PCI_ID_XL710 then
+	if devId == mod.PCI_ID_XL710 or devId == mod.PCI_ID_X710 then
 		local uptc, mptc, bptc, gotc
 		uptc, lastUptc = readCtr32(self.id, 0x003009C0, lastUptc)
 		mptc, lastMptc = readCtr32(self.id, 0x003009E0, lastMptc)
